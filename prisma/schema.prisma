@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// User model for admin authentication
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String    // Hashed password
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// Main event model
+model Event {
+  id          String       @id @default(cuid())
+  title       String
+  description String       @db.Text
+  date        DateTime
+  startTime   DateTime
+  endTime     DateTime?
+  location    String?
+  imageUrl    String?      // URL to Cloudinary or similar
+  category    EventCategory
+  isActive    Boolean      @default(true)
+  isFeatured  Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdBy   String?      // Reference to admin who created
+  updatedBy   String?      // Reference to admin who last updated
+}
+
+enum EventCategory {
+  GENERAL
+  EDUCATIONAL
+  YOUTH
+  COMMUNITY
+  RELIGIOUS
+  CHARITY
+}
+
+// Media Gallery model for images and videos
+model Media {
+  id          String     @id @default(cuid())
+  title       String
+  description String?    @db.Text
+  url         String     // URL to Cloudinary or similar
+  type        MediaType
+  category    MediaCategory
+  isPublic    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum MediaCategory {
+  EVENT
+  GALLERY
+  FACILITY
+  GENERAL
+}
+
+// Facilities information
+model Facility {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @db.Text
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)  // For controlling display order
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// FAQ entries
+model FAQ {
+  id          String   @id @default(cuid())
+  question    String
+  answer      String   @db.Text
+  category    String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)  // For controlling display order
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Contact form submissions
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  status    ContactSubmissionStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ContactSubmissionStatus {
+  PENDING
+  RESPONDED
+  ARCHIVED
+}
+
+// Announcements for important updates
+model Announcement {
+  id        String    @id @default(cuid())
+  title     String
+  content   String    @db.Text
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+  isActive  Boolean   @default(true)
+  priority  Int       @default(0)  // Higher number = higher priority
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+} 
