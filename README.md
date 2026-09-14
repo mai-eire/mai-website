@@ -1,6 +1,6 @@
-# MAI Support MVP
+[![Netlify Status](https://api.netlify.com/api/v1/badges/7cadaf16-a276-4129-a699-d006a96571d8/deploy-status)](https://app.netlify.com/projects/mai-ie/deploys)
 
-This is a Minimum Viable Product (MVP) for the MAI Patron program, built with React and Material-UI. The application provides a modern user interface for managing patron support features.
+# MAI Muslim Center Website
 
 ## Prerequisites
 
