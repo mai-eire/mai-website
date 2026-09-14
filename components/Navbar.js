@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -22,6 +22,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 const navItems = [
   {
@@ -45,7 +46,7 @@ const navItems = [
 ];
 
 // Desktop dropdown menu for a nav item with children
-const NavDropdown = ({ label, items }) => {
+const NavDropdown = ({ label, items, light }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -55,13 +56,14 @@ const NavDropdown = ({ label, items }) => {
         onClick={(e) => setAnchorEl(e.currentTarget)}
         endIcon={<ExpandMore />}
         sx={{
-          color: open ? 'primary.main' : 'text.primary',
+          color: light ? '#ffffff' : open ? 'primary.main' : 'text.primary',
           textTransform: 'none',
           fontSize: '1rem',
           fontWeight: 500,
+          transition: 'color 300ms ease',
           '&:hover': {
             backgroundColor: 'transparent',
-            color: 'primary.main',
+            color: light ? 'rgba(255, 255, 255, 0.75)' : 'primary.main',
           },
         }}
       >
@@ -100,9 +102,25 @@ const NavDropdown = ({ label, items }) => {
 
 const Navbar = () => {
   const theme = useTheme();
+  const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openSections, setOpenSections] = useState({});
+  const [scrolled, setScrolled] = useState(false);
+
+  // The home page opens on a full-bleed hero, so the bar floats over the
+  // photograph until you scroll past it, then settles into the solid bar.
+  const hasHero = router.pathname === '/';
+
+  useEffect(() => {
+    if (!hasHero) return undefined;
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll(); // catch a reload that restores a scrolled position
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [hasHero]);
+
+  const overHero = hasHero && !scrolled;
 
   const handleDrawerToggle = () => {
     setMobileOpen((prev) => !prev);
@@ -214,12 +232,14 @@ const Navbar = () => {
   return (
     <>
       <AppBar
-        position="sticky"
+        position={hasHero ? 'fixed' : 'sticky'}
         elevation={0}
         sx={{
-          backgroundColor: 'background.paper',
-          borderBottom: '1px solid',
-          borderColor: 'rgba(0, 0, 0, 0.12)',
+          backgroundColor: overHero ? 'transparent' : 'background.paper',
+          borderBottom: overHero
+            ? '1px solid transparent'
+            : '1px solid rgba(0, 0, 0, 0.12)',
+          transition: 'background-color 300ms ease, border-color 300ms ease',
         }}
       >
         <Container maxWidth="xl">
@@ -236,7 +256,7 @@ const Navbar = () => {
                 },
               }}>
                 <Image
-                  src="/assets/MAI_Logo.png"
+                  src={overHero ? '/assets/MAI_Logo_White.png' : '/assets/MAI_Logo.png'}
                   alt="MAI Logo"
                   width={84}
                   height={36}
@@ -274,9 +294,12 @@ const Navbar = () => {
                   edge="start"
                   onClick={handleDrawerToggle}
                   sx={{
-                    color: 'text.primary',
+                    color: overHero ? '#ffffff' : 'text.primary',
+                    transition: 'color 300ms ease',
                     '&:hover': {
-                      backgroundColor: 'rgba(46, 125, 50, 0.08)',
+                      backgroundColor: overHero
+                        ? 'rgba(255, 255, 255, 0.12)'
+                        : 'rgba(46, 125, 50, 0.08)',
                     }
                   }}
                 >
@@ -294,18 +317,19 @@ const Navbar = () => {
               }}>
                 {navItems.map((item) =>
                   item.children ? (
-                    <NavDropdown key={item.label} label={item.label} items={item.children} />
+                    <NavDropdown key={item.label} label={item.label} items={item.children} light={overHero} />
                   ) : (
                     <Link key={item.label} href={item.path} passHref style={{ textDecoration: 'none' }}>
                       <Button
                         sx={{
-                          color: 'text.primary',
+                          color: overHero ? '#ffffff' : 'text.primary',
                           textTransform: 'none',
                           fontSize: '1rem',
                           fontWeight: 500,
+                          transition: 'color 300ms ease',
                           '&:hover': {
                             backgroundColor: 'transparent',
-                            color: 'primary.main',
+                            color: overHero ? 'rgba(255, 255, 255, 0.75)' : 'primary.main',
                           }
                         }}
                       >
