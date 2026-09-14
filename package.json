@@ -27,8 +27,7 @@
     "start": "next start",
     "server": "node server.js",
     "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
-    "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && next build"
+    "postinstall": "prisma generate"
   },
   "proxy": "http://localhost:5001",
   "eslintConfig": {

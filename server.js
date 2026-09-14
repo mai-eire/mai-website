@@ -11,7 +11,7 @@ const corsOptions = {
     'http://localhost:3000', 
     'http://localhost:5000', 
     'http://localhost:5001',
-    'https://mai-patron-mvp.vercel.app'  // Add your Vercel domain
+    'https://mai-website.netlify.app'  // TODO: replace with your actual Netlify domain
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],

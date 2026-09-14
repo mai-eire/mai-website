@@ -25,8 +25,8 @@ async function checkIpRestrictions() {
     console.log('1. Go to your project');
     console.log('2. Navigate to Database > Settings > Network Restrictions');
     console.log('3. Add your IP address to the allowed list');
-    console.log('\nFor Vercel deployments, you might need to allow all IPs (0.0.0.0/0) or use Vercel\'s IP ranges.');
-    console.log('Vercel IP ranges can be found at: https://vercel.com/docs/concepts/edge-network/regions-and-providers');
+    console.log('\nFor Netlify deployments, functions use dynamic IPs, so you will likely need to allow all IPs (0.0.0.0/0)');
+    console.log('or use Supabase connection pooling (recommended) instead of IP allowlisting.');
   } catch (error) {
     console.error('Error checking IP:', error);
   }
