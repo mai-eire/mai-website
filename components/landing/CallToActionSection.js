@@ -53,6 +53,7 @@ const CallToActionSection = () => {
                 View Events
               </Button>
             </Link>
+            {/* TODO: Patron flow not ready yet — re-enable when /dashboard works.
             <Link href="/dashboard" passHref style={{ textDecoration: 'none' }}>
               <Button
                 variant="outlined"
@@ -66,6 +67,7 @@ const CallToActionSection = () => {
                 Become a Patron
               </Button>
             </Link>
+            */}
           </Box>
         </Box>
       </Container>

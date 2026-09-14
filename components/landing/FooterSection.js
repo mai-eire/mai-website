@@ -43,29 +43,17 @@ const FooterSection = () => {
         <Grid container spacing={4}>
           {/* Logo and Description */}
           <Grid item xs={12} md={4}>
-            <Box sx={{ mb: 2, position: 'relative', width: 120, height: 120 }}>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: 120,
-                  height: 120,
-                  borderRadius: '50%',
-                  background: '#fff',
-                  zIndex: 0,
-                }}
-              />
+            <Box sx={{ mb: 2 }}>
               <Image
-                src="/assets/MAI LOGO.png"
+                src="/assets/MAI_Logo_White.png"
                 alt="MAI Logo"
-                width={120}
-                height={120}
-                style={{ marginBottom: '1rem', position: 'relative', zIndex: 1 }}
+                width={160}
+                height={70}
+                style={{ marginBottom: '1rem' }}
               />
             </Box>
             <Typography variant="body2" color="#fff" sx={{ mb: 2, maxWidth: 300 }}>
-              The Muslim Association of Ireland serves the Muslim community through education, 
+              MAI serves the Muslim community through education, 
               worship facilities, and community support services.
             </Typography>
             <Stack direction="row" spacing={1}>
@@ -95,7 +83,7 @@ const FooterSection = () => {
           </Grid>
 
           {/* Quick Links */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} md={4}>
             <Typography variant="h6" color="#fff" sx={{ mb: 2, fontWeight: 600 }}>
               Quick Links
             </Typography>
@@ -152,7 +140,7 @@ const FooterSection = () => {
           </Grid>
 
           {/* Contact Info */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} md={4}>
             <Typography variant="h6" color="#fff" sx={{ mb: 2, fontWeight: 600 }}>
               Contact Us
             </Typography>
@@ -206,7 +194,7 @@ const FooterSection = () => {
           align="center"
           sx={{ pt: 2 }}
         >
-          © {currentYear} Muslim Association of Ireland. All rights reserved.
+          © {currentYear} MAI. All rights reserved.
         </Typography>
       </Container>
     </Box>

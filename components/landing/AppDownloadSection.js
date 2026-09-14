@@ -45,7 +45,7 @@ const AppDownloadSection = () => {
                   fontSize: { xs: '1rem', md: '1.25rem' }
                 }}
               >
-                Get prayer times, news updates, and stay connected with the Muslim Association of Ireland.
+                Get prayer times, news updates, and stay connected with MAI.
               </Typography>
               <Box 
                 sx={{ 
@@ -170,7 +170,7 @@ const AppDownloadSection = () => {
                 }}
               >
                 <Image
-                  src="/assets/1.webp"
+                  src="/assets/app-screenshot.jpeg"
                   alt="MAI Prayers App Screenshot"
                   width={300}
                   height={600}

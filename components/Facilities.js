@@ -9,15 +9,16 @@ import {
 } from '@mui/material';
 import MosqueIcon from '@mui/icons-material/Mosque';
 import GroupsIcon from '@mui/icons-material/Groups';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import Diversity3Icon from '@mui/icons-material/Diversity3';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ShareIcon from '@mui/icons-material/Share';
 import SchoolIcon from '@mui/icons-material/School';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
 
 const Facilities = () => {
   const facilities = [
     {
-      title: 'Tallaght Mosque',
+      title: 'Tallaght Muslim Center',
       description: 'Join us for the five daily prayers in our peaceful prayer halls. Our facilities are designed to accommodate both brothers and sisters in separate, comfortable spaces.',
       icon: <AccessTimeIcon sx={{ fontSize: 40 }} />,
     },
@@ -27,9 +28,9 @@ const Facilities = () => {
       icon: <GroupsIcon sx={{ fontSize: 40 }} />,
     },
     {
-      title: 'LC Arabic Classes',
-      description: 'Specialized Arabic classes designed to prepare students for the Irish Leaving Certificate examination. Our program helps students excel in their Arabic language studies through comprehensive curriculum coverage and exam preparation.',
-      icon: <SchoolIcon sx={{ fontSize: 40 }} />,
+      title: 'Youth Department',
+      description: 'A dedicated space for young Muslims to connect, learn, and grow together through educational programs, social activities, and community service.',
+      icon: <GroupsIcon sx={{ fontSize: 40 }} />,
     },
     {
       title: '5 Daily Prayers',
@@ -47,14 +48,19 @@ const Facilities = () => {
       icon: <ShareIcon sx={{ fontSize: 40 }} />,
     },
     {
-      title: 'Scouts',
-      description: 'Our scout program helps young Muslims develop leadership skills, build character, and engage in outdoor activities while maintaining Islamic values.',
-      icon: <EmojiPeopleIcon sx={{ fontSize: 40 }} />,
+      title: "Women's Activities",
+      description: 'Weekly gatherings for sisters with spiritual, social and intercultural events. Sisters of all ages and backgrounds are warmly invited to join, volunteer, and help shape our activities.',
+      icon: <Diversity3Icon sx={{ fontSize: 40 }} />,
     },
     {
-      title: 'Youth Department',
-      description: 'A dedicated space for young Muslims to connect, learn, and grow together through educational programs, social activities, and community service.',
-      icon: <GroupsIcon sx={{ fontSize: 40 }} />,
+      title: 'LC Arabic Classes',
+      description: 'Specialized Arabic classes designed to prepare students for the Irish Leaving Certificate examination. Our program helps students excel in their Arabic language studies through comprehensive curriculum coverage and exam preparation.',
+      icon: <SchoolIcon sx={{ fontSize: 40 }} />,
+    },
+    {
+      title: 'Sports Center & MMA Gym',
+      description: 'Strong Body, Strong Mind. Our sports center offers martial arts and fitness training for all ages and levels. We offer: Karate, MMA, Boxing, Wrestling, and Women\'s Fitness classes.',
+      icon: <SportsMmaIcon sx={{ fontSize: 40 }} />,
     }
   ];
 
@@ -94,7 +100,7 @@ const Facilities = () => {
 
         <Grid container spacing={4}>
           {facilities.map((facility, index) => (
-            <Grid item xs={12} sm={6} md={6} key={index}>
+            <Grid item xs={12} sm={6} md={4} key={index}>
               <Card
                 sx={{
                   height: '100%',

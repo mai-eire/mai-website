@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Container,
@@ -7,11 +7,52 @@ import {
   Grid,
   Paper,
   TextField,
-  InputAdornment
+  InputAdornment,
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 
 const NewsletterSection = () => {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      setStatus('error');
+      setMessage('Please enter your email address.');
+      return;
+    }
+
+    setStatus('loading');
+    setMessage('');
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        setStatus('success');
+        setMessage('Thank you for subscribing! You are now on our list.');
+        setEmail('');
+      } else {
+        setStatus('error');
+        setMessage(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch (err) {
+      setStatus('error');
+      setMessage('Something went wrong. Please try again later.');
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -59,7 +100,7 @@ const NewsletterSection = () => {
             mx: 'auto'
           }}
         >
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -67,6 +108,10 @@ const NewsletterSection = () => {
                   placeholder="Enter your email address"
                   variant="outlined"
                   type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={status === 'loading'}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -81,11 +126,25 @@ const NewsletterSection = () => {
                   }}
                 />
               </Grid>
+              {message && (
+                <Grid item xs={12}>
+                  <Alert severity={status === 'success' ? 'success' : 'error'}>
+                    {message}
+                  </Alert>
+                </Grid>
+              )}
               <Grid item xs={12}>
                 <Button
                   fullWidth
+                  type="submit"
                   variant="contained"
                   size="large"
+                  disabled={status === 'loading'}
+                  startIcon={
+                    status === 'loading' ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : null
+                  }
                   sx={{
                     bgcolor: 'primary.main',
                     color: 'white',
@@ -95,7 +154,7 @@ const NewsletterSection = () => {
                     }
                   }}
                 >
-                  Subscribe
+                  {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
                 </Button>
               </Grid>
             </Grid>
@@ -120,4 +179,4 @@ const NewsletterSection = () => {
   );
 };
 
-export default NewsletterSection; 
+export default NewsletterSection;

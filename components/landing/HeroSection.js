@@ -66,7 +66,7 @@ const HeroSection = () => {
                   fontWeight: 400
                 }}
               >
-                Muslim Association of Ireland
+                MAI Muslim Center
               </Typography>
 
               {/* Description */}

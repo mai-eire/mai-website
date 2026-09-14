@@ -149,22 +149,22 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
       <Head>
-        <link rel="icon" type="image/png" href="/assets/MAI LOGO.png" />
-        <title>MAI</title>
-        <meta name="description" content="Tallaght Mosque - Muslim Association of Ireland (MAI) is dedicated to supporting Muslims in Ireland and promoting Islamic values." />
+        <link rel="icon" type="image/png" href="/assets/MAI_Logo_Icon.png" />
+        <title>MAI Muslim Center</title>
+        <meta name="description" content="MAI Muslim Center is dedicated to supporting Muslims in Ireland and promoting Islamic values." />
         <meta name="keywords" content="Tallaght Mosque, Muslim Association of Ireland, MAI, Ireland Mosque, Islamic Centre, Dublin Mosque, Muslim Community Ireland" />
-        <meta name="author" content="Muslim Association of Ireland" />
+        <meta name="author" content="MAI" />
         {/* Open Graph Meta Tags for Social Sharing */}
-        <meta property="og:title" content="Tallaght Mosque - Muslim Association of Ireland" />
+        <meta property="og:title" content="MAI Muslim Center" />
         <meta property="og:description" content="Serving the Muslim community in Ireland through education, worship, and support." />
-        <meta property="og:image" content="https://new.mai.ie/assets/MAI%20LOGO.png" />
+        <meta property="og:image" content="https://new.mai.ie/assets/MAI_Logo.png" />
         <meta property="og:url" content="https://new.mai.ie/" />
         <meta property="og:type" content="website" />
         {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Tallaght Mosque - Muslim Association of Ireland" />
+        <meta name="twitter:title" content="MAI Muslim Center" />
         <meta name="twitter:description" content="Serving the Muslim community in Ireland through education, worship, and support." />
-        <meta name="twitter:image" content="https://new.mai.ie/assets/MAI%20LOGO.png" />
+        <meta name="twitter:image" content="https://new.mai.ie/assets/MAI_Logo.png" />
       </Head>
       <CssBaseline />
       <Navbar />

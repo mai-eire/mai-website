@@ -9,8 +9,28 @@ import {
   Grid,
   Snackbar,
   Alert,
+  CircularProgress,
+  MenuItem,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+
+const CONTACT_CATEGORIES = [
+  'General Inquiry',
+  'Prayer Times & Facilities',
+  'Albayan School & Classes',
+  'Events & Programs',
+  'Sports Center & MMA Gym',
+  "Women's Activities",
+  'Youth Department',
+  'New Muslims & Dawah',
+  'Donations',
+  'Volunteering',
+  'Marriage (Nikah) Services',
+  'Funeral Services',
+  'Hall & Facility Booking',
+  'Feedback & Complaints',
+  'Other',
+];
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -24,9 +44,11 @@ const ContactUs = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    category: '',
     subject: '',
     message: '',
   });
+  const [submitting, setSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -41,21 +63,48 @@ const ContactUs = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically handle the form submission to your backend
-    // For now, we'll just show a success message
-    setSnackbar({
-      open: true,
-      message: 'Thank you for your message! We will get back to you soon.',
-      severity: 'success',
-    });
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-    });
+    setSubmitting(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        setSnackbar({
+          open: true,
+          message: 'Thank you for your message! We will get back to you soon.',
+          severity: 'success',
+        });
+        setFormData({
+          name: '',
+          email: '',
+          category: '',
+          subject: '',
+          message: '',
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          message: data.error || 'Something went wrong. Please try again.',
+          severity: 'error',
+        });
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Something went wrong. Please try again later.',
+        severity: 'error',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -105,6 +154,24 @@ const ContactUs = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  select
+                  required
+                  fullWidth
+                  label="What is this about?"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  variant="outlined"
+                >
+                  {CONTACT_CATEGORIES.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
                   required
                   fullWidth
                   label="Subject"
@@ -134,8 +201,14 @@ const ContactUs = () => {
                   color="primary"
                   size="large"
                   fullWidth
+                  disabled={submitting}
+                  startIcon={
+                    submitting ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : null
+                  }
                 >
-                  Send Message
+                  {submitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </Grid>
             </Grid>
