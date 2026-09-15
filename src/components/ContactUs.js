@@ -179,6 +179,24 @@ const ContactUs = () => {
 
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  select
+                  required
+                  fullWidth
+                  label="What is this about?"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  variant="outlined"
+                >
+                  {department.categories.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   required
@@ -201,24 +219,6 @@ const ContactUs = () => {
                   onChange={handleChange}
                   variant="outlined"
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  select
-                  required
-                  fullWidth
-                  label="What is this about?"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  variant="outlined"
-                >
-                  {department.categories.map((category) => (
-                    <MenuItem key={category} value={category}>
-                      {category}
-                    </MenuItem>
-                  ))}
-                </TextField>
               </Grid>
               <Grid item xs={12}>
                 <TextField

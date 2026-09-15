@@ -20,6 +20,7 @@ export const DEPARTMENTS = [
     intro:
       'General enquiries, donations, volunteering, hall bookings and anything not covered by another department.',
     categories: [
+      'Official Correspondence',
       'General Inquiry',
       'Events & Programs',
       "Women's Activities",
