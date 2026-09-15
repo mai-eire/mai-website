@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import {
   Container,
   Typography,
@@ -39,7 +40,7 @@ const Facilities = () => {
     },
     {
       title: 'Friday (Jumuaa) Prayer',
-      description: 'Join us every Friday at 1:15 PM for the Jumuaa prayer with an inspiring khutbah (sermon).',
+      description: 'Join us every Friday at 1pm or 2pm for the Jumuaa prayers with an inspiring khutbah (sermon).',
       icon: <MosqueIcon sx={{ fontSize: 40 }} />,
     },
     {
@@ -67,36 +68,77 @@ const Facilities = () => {
   return (
     <Box
       sx={{
+        position: 'relative',
+        overflow: 'hidden',
         py: { xs: 6, md: 8 },
         backgroundColor: 'background.default',
       }}
     >
-      <Container maxWidth="lg">
-        <Typography
-          variant="h2"
-          align="center"
-          gutterBottom
+      {/* Prayer hall photograph, washed back so the cards stay the focus */}
+      <Box aria-hidden sx={{ position: 'absolute', inset: 0 }}>
+        <Image
+          src="/assets/tallaght_mosque.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          quality={70}
+          style={{ objectFit: 'cover', objectPosition: 'center 30%' }}
+        />
+      </Box>
+      <Box
+        aria-hidden
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(to bottom, rgba(247, 250, 252, 0.6) 0%, rgba(247, 250, 252, 0.5) 25%, rgba(247, 250, 252, 0.5) 75%, rgba(247, 250, 252, 0.92) 100%)',
+        }}
+      />
+
+      <Container maxWidth="lg" sx={{ position: 'relative' }}>
+        {/* Intro sits on the same frosted surface as the cards so it has something to rest on */}
+        <Box
           sx={{
-            mb: { xs: 4, md: 6 },
-            color: 'text.primary',
-          }}
-        >
-          Our Facilities
-        </Typography>
-        
-        <Typography
-          variant="h6"
-          align="center"
-          sx={{
-            mb: { xs: 5, md: 7 },
-            color: 'text.secondary',
-            maxWidth: 800,
+            maxWidth: 880,
             mx: 'auto',
-            lineHeight: 1.7,
+            mb: { xs: 5, md: 7 },
+            px: { xs: 3, md: 6 },
+            py: { xs: 4, md: 5 },
+            textAlign: 'center',
+            borderRadius: '16px',
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            border: '1px solid rgba(255, 255, 255, 0.6)',
+            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)',
           }}
         >
-          MAI provides a range of facilities and services to serve our community's spiritual, educational, and social needs.
-        </Typography>
+          <Typography
+            variant="h2"
+            component="h1"
+            sx={{
+              mb: { xs: 2, md: 3 },
+              color: 'text.primary',
+            }}
+          >
+            Our Facilities
+          </Typography>
+
+          <Box
+            aria-hidden
+            sx={{ width: 56, height: 3, mx: 'auto', mb: { xs: 2, md: 3 }, bgcolor: 'primary.main', borderRadius: 2 }}
+          />
+
+          <Typography
+            variant="h6"
+            sx={{
+              color: 'text.secondary',
+              lineHeight: 1.7,
+            }}
+          >
+            MAI provides a range of facilities and services to serve our community's spiritual, educational, and social needs.
+          </Typography>
+        </Box>
 
         <Grid container spacing={4}>
           {facilities.map((facility, index) => (
@@ -107,9 +149,16 @@ const Facilities = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   borderRadius: '16px',
-                  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                  // Frosted glass, so the prayer hall shows through the cards as well as around them
+                  backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                  backdropFilter: 'blur(14px)',
+                  WebkitBackdropFilter: 'blur(14px)',
+                  border: '1px solid rgba(255, 255, 255, 0.6)',
+                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)',
+                  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out',
                   '&:hover': {
                     transform: 'translateY(-4px)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
                     boxShadow: '0 6px 20px rgba(0, 0, 0, 0.1)',
                   },
                 }}
