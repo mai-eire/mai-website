@@ -49,10 +49,10 @@ export const DEPARTMENTS = [
   },
   {
     id: 'tallaght',
-    label: 'Tallaght Mosque',
+    label: 'Tallaght Center',
     email: 'tallaght@mai.ie',
     head: 'Safwan Abdulkader',
-    intro: 'Enquiries about the Tallaght Mosque and Muslim Centre.',
+    intro: 'Enquiries about the MAI Muslim Center in Tallaght and Muslim Centre.',
     categories: [
       'General Inquiry',
       'Marriage (Nikah) Services',
@@ -82,7 +82,7 @@ export const DEPARTMENTS = [
     id: 'youth',
     label: 'Youth',
     email: 'youth@mai.ie',
-    head: 'Osama Aburedah',
+    head: 'Osama Aburideh',
     intro: 'Youth programmes, activities, trips and volunteering with the youth team.',
     categories: [
       'Youth Programs & Activities',
@@ -90,6 +90,20 @@ export const DEPARTMENTS = [
       'Al-Kahf Camp',
       'Volunteering',
       'Feedback & Complaints',
+      'Other',
+    ],
+  },
+  {
+    id: 'media',
+    label: 'Media',
+    email: 'media@mai.ie',
+    head: 'Comms Team',
+    intro:
+      'Press and interview requests, photography and filming, social media and website content.',
+    categories: [
+      'Press & Interview Request',
+      'Social Media',
+      'Website',
       'Other',
     ],
   },
