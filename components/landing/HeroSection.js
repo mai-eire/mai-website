@@ -9,6 +9,7 @@ import {
 import PlaceIcon from '@mui/icons-material/Place';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Image from 'next/image';
+import { SOCIAL_LINKS } from '../../data/socials';
 
 // Deep warm brown pulled from the prayer hall photo — used so the section never
 // flashes white before the image decodes.
@@ -246,12 +247,9 @@ const HeroSection = () => {
             >
               Follow us
             </Typography>
-            {[
-              { label: 'Instagram', href: 'https://www.instagram.com/mai_youth/' },
-              { label: 'Facebook', href: 'https://www.facebook.com/people/Irish-MAI-Endowment/100064844792099/' },
-            ].map((social) => (
+            {SOCIAL_LINKS.map((social) => (
               <Button
-                key={social.label}
+                key={social.id}
                 variant="text"
                 component="a"
                 href={social.href}
