@@ -1,23 +1,38 @@
 // Prisma schema.
 //
-// PORTABILITY NOTE: the datasource is SQLite for now (local dev, zero setup).
-// Everything here is deliberately written to work on SQLite AND PostgreSQL so
-// the move later is a one-line provider change plus a fresh migration:
+// The datasource is SQLite because that is what Cloudflare D1 is. The
+// portability rules below were written when this ran on a local SQLite file
+// and a move to PostgreSQL looked likely; landing on D1 instead means they
+// cost nothing and the schema needed no rewrite at all. Keep to them:
 //   - no `enum` blocks (SQLite has none) -> plain String columns whose allowed
 //     values live in data/posts.js and data/users.js, so there is one source of
 //     truth the UI and the API both read from.
 //   - no `@db.Text` (SQLite has none) -> plain String, which Prisma already
 //     maps to `text` on PostgreSQL anyway, so nothing is lost.
 //   - no scalar lists (SQLite has none) -> see Post.topics.
-// If you land on Cloudflare D1, that is SQLite too and this schema fits as-is.
+//   - no relations, and so no nested writes. This one is now load-bearing:
+//     D1 has no transactions, so Prisma would silently run the statements of
+//     an implicit transaction individually. Adding a relation means giving up
+//     atomicity without being told. Check that trade before you add one.
+//
+// There is no `url` here: Prisma 7 removed it from the datasource block. The
+// connection arrives instead as the D1 binding handed to the adapter in
+// lib/prisma.ts, and prisma.config.ts tells the CLI where to look.
 
 generator client {
-  provider = "prisma-client-js"
+  // The new `prisma-client` generator, not the legacy `prisma-client-js`.
+  // Prisma 7 compiles queries with a WebAssembly module, and Workers refuses
+  // `new WebAssembly.Module(bytes)` at runtime ("Wasm code generation
+  // disallowed by embedder") - the wasm has to arrive as a static import
+  // instead. Only this generator, told to target workerd, emits that.
+  provider     = "prisma-client"
+  output       = "../lib/generated/prisma"
+  runtime      = "workerd"
+  moduleFormat = "esm"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 // Admin/editor accounts for the newsroom back office.

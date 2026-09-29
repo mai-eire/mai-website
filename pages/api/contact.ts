@@ -92,7 +92,7 @@ export default async function handler(
       return res.status(200).json({ success: true });
     }
 
-    const data = await response.json().catch(() => ({}));
+    const data = (await response.json().catch(() => ({}))) as { code?: string; message?: string };
     console.error('Brevo contact email failed:', response.status, data);
     return res.status(502).json({
       error: 'Unable to send your message right now. Please try again later.',

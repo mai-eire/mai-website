@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mai-website",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-09-01",
+
+  // nodejs_compat: the app runs on the Node.js runtime, not the edge runtime,
+  //   which is what lets bcryptjs, jose and the Prisma client work unchanged.
+  // global_fetch_strictly_public: required by the OpenNext adapter so the
+  //   Worker's own fetch() reaches the public internet (Brevo) rather than
+  //   looping back into the Worker.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+
+  "observability": {
+    "enabled": true
+  },
+
+  // The newsroom database. `database_id` is filled in by
+  // `wrangler d1 create mai-website` - see docs/cloudflare.md.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mai-website",
+      "database_id": "REPLACE_ME",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

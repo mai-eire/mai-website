@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../lib/prisma';
-import { Event } from '@prisma/client';
+import type { EventModel } from '../../../lib/generated/prisma/models';
 
 // Function to retry a database operation
 async function retryOperation<T>(
@@ -52,7 +52,7 @@ export default async function handler(
         })
       );
       
-      const events = await Promise.race([eventsPromise, timeoutPromise]) as Event[];
+      const events = await Promise.race([eventsPromise, timeoutPromise]) as EventModel[];
       
       console.log(`Successfully fetched ${events.length} events`);
       return res.status(200).json(events);

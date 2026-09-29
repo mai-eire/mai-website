@@ -1,15 +1,18 @@
 // Creates or updates a newsroom account.
 //
-//   npm run create-admin -- you@mai.ie "Your Name" ADMIN
+//   npm run create-admin -- you@mai.ie "Your Name" ADMIN            (local)
+//   npm run create-admin -- you@mai.ie "Your Name" ADMIN --remote   (production)
 //
 // The password is read from stdin rather than taken as an argument, so it
 // never lands in your shell history or in the process list.
+//
+// Local by default. Pass --remote to create the account on the deployed D1
+// database - that is the one-off step that gives the live site its first
+// editor, and it needs `wrangler login` to have been run first.
 
 const readline = require('readline');
-const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
-
-const prisma = new PrismaClient();
+const { lit, execute, wantsRemote, newId } = require('./d1');
 
 const ask = (question) =>
   new Promise((resolve) => {
@@ -24,10 +27,11 @@ const ask = (question) =>
   });
 
 (async () => {
-  const [email, name, role = 'ADMIN'] = process.argv.slice(2);
+  const remote = wantsRemote(process.argv);
+  const [email, name, role = 'ADMIN'] = process.argv.slice(2).filter((a) => a !== '--remote');
 
   if (!email) {
-    console.error('Usage: npm run create-admin -- <email> "<name>" [ADMIN|EDITOR]');
+    console.error('Usage: npm run create-admin -- <email> "<name>" [ADMIN|EDITOR] [--remote]');
     process.exit(1);
   }
   if (!['ADMIN', 'EDITOR'].includes(role)) {
@@ -35,25 +39,36 @@ const ask = (question) =>
     process.exit(1);
   }
 
-  const password = await ask('Password for ' + email + ': ');
+  const password = await ask('Password for ' + email + (remote ? ' (PRODUCTION)' : '') + ': ');
   if (!password || password.length < 10) {
     console.error('Password must be at least 10 characters.');
     process.exit(1);
   }
 
+  const normalised = String(email).trim().toLowerCase();
   const hashed = await bcrypt.hash(password, 12);
-  const user = await prisma.user.upsert({
-    where: { email },
-    update: { password: hashed, role, name: name || undefined },
-    create: { email, password: hashed, role, name: name || null },
-  });
+  const now = Date.now();
+
+  // Upsert on the unique email, so re-running this is how you reset a password
+  // rather than an error. createdAt is left alone on conflict - an existing
+  // account keeps the date it was actually made.
+  execute(
+    [
+      'INSERT INTO "User" (id, email, name, password, role, createdAt, updatedAt)',
+      `VALUES (${lit(newId())}, ${lit(normalised)}, ${lit(name || null)}, ${lit(hashed)}, ${lit(role)}, ${now}, ${now})`,
+      'ON CONFLICT(email) DO UPDATE SET',
+      '  password = excluded.password,',
+      '  role = excluded.role,',
+      '  name = excluded.name,',
+      '  updatedAt = excluded.updatedAt;',
+    ],
+    { remote }
+  );
 
   console.log('');
-  console.log('Done. ' + user.email + ' is ready as ' + user.role + '.');
+  console.log(`Done. ${normalised} is ready as ${role} on the ${remote ? 'remote' : 'local'} database.`);
   console.log('Sign in at /admin/login');
-  await prisma.$disconnect();
-})().catch(async (e) => {
+})().catch((e) => {
   console.error(e.message);
-  await prisma.$disconnect();
   process.exit(1);
 });

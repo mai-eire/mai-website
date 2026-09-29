@@ -50,7 +50,7 @@ export default async function handler(
       return res.status(200).json({ success: true });
     }
 
-    const data = await response.json().catch(() => ({}));
+    const data = (await response.json().catch(() => ({}))) as { code?: string };
 
     // Contact already exists and could not be updated into the list
     if (data?.code === 'duplicate_parameter') {

@@ -34,3 +34,13 @@ prisma/dev.db-journal
 
 # TypeScript incremental build cache
 tsconfig.tsbuildinfo
+
+# Cloudflare Workers
+.open-next
+.wrangler
+
+# Cloudflare local secrets
+.dev.vars
+
+# Generated Prisma client
+lib/generated

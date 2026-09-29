@@ -3,13 +3,13 @@
 //
 //   npm run seed:newsroom
 //
-// Development only. Every seeded post is tagged with SEED_MARKER in createdBy,
-// and re-running the script replaces exactly those rows, so it can never touch
-// anything a real editor wrote.
+// Development only - it writes to the LOCAL D1 database and refuses --remote.
+// Every seeded post is tagged with SEED_MARKER in createdBy, and re-running the
+// script replaces exactly those rows, so it can never touch anything a real
+// editor wrote.
 
-const { PrismaClient } = require('@prisma/client');
+const { lit, execute, wantsRemote, newId } = require('./d1');
 
-const prisma = new PrismaClient();
 const SEED_MARKER = 'seed@local';
 
 const posts = [
@@ -143,36 +143,38 @@ That is not a call to be quieter. It is a call to be harder to dismiss.`,
 ];
 
 (async () => {
-  if (process.env.NODE_ENV === 'production') {
-    console.error('Refusing to seed a production database.');
+  if (wantsRemote(process.argv)) {
+    console.error('Refusing to seed the remote database. This script is for local content only.');
     process.exit(1);
   }
 
-  await prisma.post.deleteMany({ where: { createdBy: SEED_MARKER } });
-
   const now = Date.now();
-  let i = 0;
+  const columns = [
+    'id', 'type', 'title', 'slug', 'summary', 'body', 'status', 'publishedAt',
+    'topics', 'issuedBy', 'referenceCode', 'authorName', 'authorTitle',
+    'isExternalSubmission', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy',
+  ];
 
-  for (const post of posts) {
+  const rows = posts.map((post, i) => {
     // Space the dates a week apart so the newest-first ordering is visible.
-    const publishedAt = new Date(now - i * 7 * 24 * 60 * 60 * 1000);
-    i += 1;
+    const publishedAt = now - i * 7 * 24 * 60 * 60 * 1000;
+    const values = [
+      newId(), post.type, post.title, post.slug, post.summary, post.body,
+      'PUBLISHED', publishedAt, post.topics || '', post.issuedBy ?? null,
+      post.referenceCode ?? null, post.authorName ?? null, post.authorTitle ?? null,
+      post.isExternalSubmission ?? false, now, now, SEED_MARKER, SEED_MARKER,
+    ];
+    return `INSERT INTO "Post" (${columns.map((c) => `"${c}"`).join(', ')}) VALUES (${values.map(lit).join(', ')});`;
+  });
 
-    await prisma.post.create({
-      data: {
-        ...post,
-        status: 'PUBLISHED',
-        publishedAt,
-        createdBy: SEED_MARKER,
-        updatedBy: SEED_MARKER,
-      },
-    });
-  }
+  // Every seeded post is tagged with SEED_MARKER in createdBy and re-running
+  // replaces exactly those rows, so this can never touch anything a real editor
+  // wrote - including a post that happens to share a slug's worth of bad luck.
+  execute([`DELETE FROM "Post" WHERE createdBy = ${lit(SEED_MARKER)};`, ...rows]);
 
+  console.log('');
   console.log('Seeded ' + posts.length + ' example posts. Visit /news');
-  await prisma.$disconnect();
-})().catch(async (e) => {
+})().catch((e) => {
   console.error(e.message);
-  await prisma.$disconnect();
   process.exit(1);
 });
