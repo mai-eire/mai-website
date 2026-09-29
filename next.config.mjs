@@ -58,8 +58,23 @@ const nextConfig = {
   // rather than against the file that wrote it, and every one of those lookups
   // misses. The absolute path never outlives the build: the Cloudflare bundler
   // inlines the wasm into the Worker in the very next step.
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev, webpack }) => {
     if (!isServer) return config;
+
+    // Development runs in Node, so swap in the Node build of the Prisma client
+    // (see the second generator in schema.prisma). Everything below this point
+    // is about the workerd build and does not apply.
+    if (dev) {
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(/generated\/prisma\/client/, (resource) => {
+          resource.request = resource.request.replace(
+            'generated/prisma/client',
+            'generated/prisma-node/client'
+          );
+        })
+      );
+      return config;
+    }
 
     const existing = Array.isArray(config.externals)
       ? config.externals

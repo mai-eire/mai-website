@@ -31,6 +31,25 @@ generator client {
   moduleFormat = "esm"
 }
 
+// The same client again, built for Node.
+//
+// `next dev` runs the app in Node, not in workerd - it only borrows the
+// Cloudflare *bindings*. The workerd client above loads its query compiler by
+// importing a .wasm file, which Node cannot do ("Unknown file extension
+// .wasm"), so development needs the Node build, which carries the same
+// compiler base64-encoded inside a .js file instead.
+//
+// Nothing imports this directly. next.config.mjs swaps the two over when it is
+// building for development, so lib/prisma.ts has one import either way. The
+// `runtime` field does not accept env(), which is why this is a second
+// generator rather than one parameterised block.
+generator clientNode {
+  provider     = "prisma-client"
+  output       = "../lib/generated/prisma-node"
+  runtime      = "nodejs"
+  moduleFormat = "esm"
+}
+
 datasource db {
   provider = "sqlite"
 }

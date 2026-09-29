@@ -121,6 +121,13 @@ dependency can be present, correct, and still missing from the bundle.
   wasm module from bytes at runtime (`Wasm code generation disallowed by
   embedder`). Only the `prisma-client` generator targeting `workerd` emits a
   static wasm import instead - see the generator block in `schema.prisma`.
+- **The same client cannot serve both `next dev` and the Worker.** Development
+  runs the app in Node and only borrows the Cloudflare bindings, and Node cannot
+  import a `.wasm` file at all. So `schema.prisma` declares the client twice,
+  once for `workerd` and once for `nodejs`, and `next.config.mjs` swaps them
+  over in development. `lib/prisma.ts` has one import either way. If a query
+  works under `npm run dev` and fails under `npm run preview`, this is the first
+  place to look - they are genuinely different builds.
 - **Webpack cannot parse that import's `?module` suffix**, so `next.config.mjs`
   marks it external for the Cloudflare bundler to resolve. It resolves it to an
   absolute path first: left relative, webpack re-resolves it against each
