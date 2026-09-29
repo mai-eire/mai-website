@@ -94,6 +94,23 @@ export const DEPARTMENTS = [
     ],
   },
   {
+    id: 'women',
+    label: 'Women',
+    email: 'women@mai.ie',
+    head: 'Women\'s Department',
+    intro:
+      "Sisters' circles, classes and events, the women's prayer area and volunteering with the women's team.",
+    categories: [
+      "Women's Activities",
+      'Classes & Halaqas',
+      'Events & Programs',
+      'Prayer Area & Facilities',
+      'Volunteering',
+      'Feedback & Complaints',
+      'Other',
+    ],
+  },
+  {
     id: 'media',
     label: 'Media',
     email: 'media@mai.ie',
