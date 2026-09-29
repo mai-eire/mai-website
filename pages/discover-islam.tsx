@@ -32,13 +32,15 @@ export default function DiscoverIslamPage() {
             <Typography variant="h2" component="h1" sx={{ mb: 1.5 }}>
               Discover Islam
             </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: 'text.secondary', fontWeight: 400, maxWidth: '58ch' }}
-            >
-              Whether you are curious, researching, or thinking about Islam for
-              yourself, the charity below specialises in exactly this, right
-              across Ireland.
+            {/* Both this and the note under the card are single sentences that
+                sit on one line at the container's width. They are not capped to
+                a reading measure: a measure stops a paragraph running too wide,
+                and breaking a one-line sentence in half to obey it just makes
+                it look like a paragraph that ran out of room. Keep them short
+                enough to fit, and they will wrap only on a phone. */}
+            <Typography variant="subtitle1" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+              Curious about Islam, researching it, or considering it yourself?
+              This charity specialises in it.
             </Typography>
           </Box>
 
@@ -181,10 +183,7 @@ export default function DiscoverIslamPage() {
 
           {/* Said plainly rather than left to be inferred from the icon: they
               are not us, and we are not speaking for them. */}
-          <Typography
-            variant="body2"
-            sx={{ color: 'text.secondary', mt: 2.5, maxWidth: '58ch' }}
-          >
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 2.5 }}>
             Discover Islam Ireland is an independent charity, not part of {ORG_NAME}. The link above leaves this site.
           </Typography>
         </Container>
