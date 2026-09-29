@@ -33,7 +33,7 @@ There is **one** listing page.
   should see an address that reads as official.
 - **`/news/rss.xml`** - the whole newsroom as a feed, for aggregators.
 - `/statements` and `/articles` were listing pages in an earlier revision.
-  They now redirect to the matching filter (see `next.config.js`), so any link
+  They now redirect to the matching filter (see `next.config.mjs`), so any link
   already handed out still works.
 
 Filters live in the URL, so any filtered view can be bookmarked, sent to a
@@ -201,48 +201,30 @@ refuses to sign anyone in rather than falling back to a guessable key.
 
 ## The database
 
-Currently **SQLite**, at `prisma/dev.db`, for local development:
+**Cloudflare D1**, bound to the Worker as `DB`. D1 is SQLite, which is what the
+portability rules in `prisma/schema.prisma` were already keeping the schema to,
+so landing there cost no rewrite at all:
 
-```bash
-npm run db:push          # create/update the local database from the schema
-npm run seed:newsroom    # four example posts, so the pages have content
-```
-
-The schema is deliberately written to work on both SQLite and PostgreSQL, so
-moving is a one-line provider change plus a fresh migration:
-
-- **No enums.** SQLite has none. `type`, `status` and `role` are plain strings,
-  and the allowed values live in `data/posts.js` and `data/users.js`, which
-  `lib/postInput.ts` validates against on every write.
+- **No enums.** `type`, `status` and `role` are plain strings, and the allowed
+  values live in `data/posts.js` and `data/users.js`, which `lib/postInput.ts`
+  validates against on every write.
 - **No arrays.** `topics` is one comma-delimited column, wrapped in commas
   (`,palestine,youth,`) so a `contains ",youth,"` filter matches a whole tag and
   never a partial one. Always go through `encodeTopics` / `decodeTopics` in
   `lib/posts.ts`.
-- **No `@db.Text`.** Plain `String`, which Prisma already maps to `text` on
-  PostgreSQL.
+- **No `@db.Text`.** Plain `String`.
+- **No relations.** This one is now load-bearing rather than merely tidy: D1 has
+  no transactions, so Prisma runs the statements of an implicit transaction
+  individually instead of failing. Nothing in the app calls `$transaction` and
+  no model has a relation, so there is nothing to half-apply today. Adding a
+  relation gives that up silently.
 
-If you land on Cloudflare D1, that is SQLite too and this schema fits as-is.
+Local development gets its own D1, created by `npm run db:migrate` and attached
+to `next dev` by `initOpenNextCloudflareForDev()` in `next.config.mjs`, so
+development and production take one code path rather than two.
 
-### Before this goes to production
-
-**SQLite will not work on Netlify.** Serverless functions get an ephemeral,
-read-only filesystem, so every function instance would see a different empty
-database and nothing would persist. Production needs a real Postgres (or D1):
-
-1. Change `provider` in `prisma/schema.prisma` from `sqlite` to `postgresql`.
-2. Set `DATABASE_URL` in the Netlify environment to the Postgres connection
-   string. The old Supabase URL is preserved, commented out, in `.env`.
-3. Set `AUTH_SECRET` in the Netlify environment to a **different** value from
-   the local one (`openssl rand -base64 32`).
-4. Run `npx prisma migrate deploy` (or `db push`) against that database, then
-   `npm run create-admin` once to make the first real account.
-5. Set `NEXT_PUBLIC_SITE_URL` to the live origin so canonical URLs, RSS links
-   and social-share cards point at the right domain.
-
-One caution on Supabase specifically: the previous `DATABASE_URL` used the
-direct connection on port 5432, which is a common cause of connection failures
-from serverless platforms. If you go back to Supabase, use the pooler
-connection string rather than the direct one.
+Setup, deployment, schema changes and the bundling problems specific to Workers
+are in **[cloudflare.md](cloudflare.md)**.
 
 ## Code map
 

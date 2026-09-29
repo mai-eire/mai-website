@@ -49,14 +49,23 @@ The application is built using Create React App and follows modern React develop
 
 ## Newsroom (statements & articles)
 
-Publishing, the admin back office, and what has to change before the database
-works in production: **[docs/newsroom.md](docs/newsroom.md)**.
+Publishing and the admin back office: **[docs/newsroom.md](docs/newsroom.md)**.
+
+## Hosting
+
+The site runs on Cloudflare Workers with a D1 database. Setup, deployment and
+the things that only break on Workers: **[docs/cloudflare.md](docs/cloudflare.md)**.
 
 Quick start for local development:
 
 ```bash
-npm run db:push                                  # create the local SQLite database
+npm install
+npm run db:migrate                               # create the local D1 database
 npm run seed:newsroom                            # optional: four example posts
 npm run create-admin -- you@mai.ie "Your Name"   # an account to sign in with
 npm run dev                                      # then visit /news and /admin/posts
 ```
+
+`npm run dev` runs the Next dev server with a local D1 attached. Before
+deploying, `npm run preview` builds and runs the actual Worker - some things
+only fail there.
