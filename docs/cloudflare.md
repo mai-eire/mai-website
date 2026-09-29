@@ -112,8 +112,8 @@ Read the generated SQL before applying it. `migrate diff` will happily write a
 
 ## Things that only break on Workers
 
-Three problems cost real time during the move. All three are fixed, and all
-three are commented where they live, but they share a shape worth recognising:
+Four problems cost real time during the move. All four are fixed, and all
+four are commented where they live, but they share a shape worth recognising:
 **the Node build and the Workers build resolve modules differently**, so a
 dependency can be present, correct, and still missing from the bundle.
 
