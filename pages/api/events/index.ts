@@ -56,7 +56,7 @@ export default async function handler(
       
       console.log(`Successfully fetched ${events.length} events`);
       return res.status(200).json(events);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching events:', error);
       
       // Check if it's a database connection error
