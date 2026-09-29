@@ -1,137 +1,158 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Prisma schema.
+//
+// PORTABILITY NOTE: the datasource is SQLite for now (local dev, zero setup).
+// Everything here is deliberately written to work on SQLite AND PostgreSQL so
+// the move later is a one-line provider change plus a fresh migration:
+//   - no `enum` blocks (SQLite has none) -> plain String columns whose allowed
+//     values live in data/posts.js and data/users.js, so there is one source of
+//     truth the UI and the API both read from.
+//   - no `@db.Text` (SQLite has none) -> plain String, which Prisma already
+//     maps to `text` on PostgreSQL anyway, so nothing is lost.
+//   - no scalar lists (SQLite has none) -> see Post.topics.
+// If you land on Cloudflare D1, that is SQLite too and this schema fits as-is.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
-// User model for admin authentication
+// Admin/editor accounts for the newsroom back office.
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  password      String    // Hashed password
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String // bcrypt hash - never a plaintext password
+  role      String   @default("EDITOR") // see ROLES in data/users.js
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-enum Role {
-  USER
-  ADMIN
-  SUPER_ADMIN
+// Statements and articles share one table: they carry the same core fields
+// (title, slug, date, body, topics) and the newsroom hub lists them together.
+// `type` selects which template renders it and which of the type-specific
+// field groups below apply.
+model Post {
+  id      String @id @default(cuid())
+  type    String // 'STATEMENT' | 'ARTICLE' - see POST_TYPES in data/posts.js
+  title   String
+  slug    String @unique
+  summary String // card excerpt and og:description; keep it press-quotable
+  body    String // Markdown
+
+  status      String    @default("DRAFT") // 'DRAFT' | 'PUBLISHED'
+  publishedAt DateTime? // set when first published; drives ordering
+
+  // SQLite has no array type, so topics are stored as a delimited string.
+  // Always read/write this through the helpers in lib/posts.ts rather than
+  // touching the raw column, so the delimiters stay consistent.
+  topics String @default("")
+
+  coverImageUrl String?
+
+  // Article-only. An article is an opinion piece and carries a byline; an
+  // external submission additionally shows the "views are the author's own"
+  // disclaimer so a submission is never mistaken for an MAI position.
+  authorName           String?
+  authorTitle          String?
+  authorPhotoUrl       String?
+  isExternalSubmission Boolean @default(false)
+
+  // Statement-only. A statement speaks for the organisation, so it gets an
+  // issuing body instead of a byline, plus the things press need: a stable
+  // reference to quote and an optional PDF on letterhead.
+  issuedBy      String?
+  referenceCode String?
+  pdfUrl        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
+
+  @@index([type, status, publishedAt])
+  @@index([status, publishedAt])
 }
 
-// Main event model
+// ---------------------------------------------------------------------------
+// Pre-existing models, carried over unchanged apart from the SQLite-safe
+// rewrites described at the top (enum -> String, @db.Text -> String).
+// ---------------------------------------------------------------------------
+
 model Event {
-  id          String       @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
-  description String       @db.Text
+  description String
   date        DateTime
   startTime   DateTime
   endTime     DateTime?
   location    String?
-  imageUrl    String?      // URL to Cloudinary or similar
-  category    EventCategory
-  isActive    Boolean      @default(true)
-  isFeatured  Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  createdBy   String?      // Reference to admin who created
-  updatedBy   String?      // Reference to admin who last updated
+  imageUrl    String?
+  category    String // GENERAL | EDUCATIONAL | YOUTH | COMMUNITY | RELIGIOUS | CHARITY
+  isActive    Boolean   @default(true)
+  isFeatured  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdBy   String?
+  updatedBy   String?
 }
 
-enum EventCategory {
-  GENERAL
-  EDUCATIONAL
-  YOUTH
-  COMMUNITY
-  RELIGIOUS
-  CHARITY
-}
-
-// Media Gallery model for images and videos
 model Media {
-  id          String     @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
-  description String?    @db.Text
-  url         String     // URL to Cloudinary or similar
-  type        MediaType
-  category    MediaCategory
-  isPublic    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  description String?
+  url         String
+  type        String // IMAGE | VIDEO
+  category    String // EVENT | GALLERY | FACILITY | GENERAL
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-enum MediaType {
-  IMAGE
-  VIDEO
-}
-
-enum MediaCategory {
-  EVENT
-  GALLERY
-  FACILITY
-  GENERAL
-}
-
-// Facilities information
 model Facility {
   id          String   @id @default(cuid())
   name        String
-  description String   @db.Text
+  description String
   imageUrl    String?
   isActive    Boolean  @default(true)
-  order       Int      @default(0)  // For controlling display order
+  order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-// FAQ entries
 model FAQ {
-  id          String   @id @default(cuid())
-  question    String
-  answer      String   @db.Text
-  category    String?
-  isActive    Boolean  @default(true)
-  order       Int      @default(0)  // For controlling display order
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String?
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-// Contact form submissions
 model ContactSubmission {
   id        String   @id @default(cuid())
   name      String
   email     String
   subject   String
-  message   String   @db.Text
-  status    ContactSubmissionStatus @default(PENDING)
+  message   String
+  status    String   @default("PENDING") // PENDING | RESPONDED | ARCHIVED
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum ContactSubmissionStatus {
-  PENDING
-  RESPONDED
-  ARCHIVED
-}
-
-// Announcements for important updates
 model Announcement {
   id        String    @id @default(cuid())
   title     String
-  content   String    @db.Text
+  content   String
   startDate DateTime  @default(now())
   endDate   DateTime?
   isActive  Boolean   @default(true)
-  priority  Int       @default(0)  // Higher number = higher priority
+  priority  Int       @default(0)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-} 
+}

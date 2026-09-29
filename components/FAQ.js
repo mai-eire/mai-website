@@ -12,12 +12,12 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 const FAQ = () => {
   const faqItems = [
     {
-      question: 'What is the Irish MAI Endowment Limited?',
-      answer: 'Irish MAI Endowment Limited, also known as MAI and Tallaght Mosque, is an Islamic association based in Ireland. It is dedicated to supporting Muslims in Ireland and promoting the noble values of Islam. The association also contributes to the civilizational development of Irish society and is registered as a non-profit company limited by guarantee.'
+      question: 'What is MAI?',
+      answer: 'MAI is an Islamic association based in Ireland. It is dedicated to supporting Muslims in Ireland and promoting the noble values of Islam. The association also contributes to the development of Irish society and is registered as a non-for-profit company.'
     },
     {
       question: 'Where are you located?',
-      answer: 'We are based at: Unit 1 & 2, Greenhills Business Centre, Greenhills Road, Tallaght, Dublin 24, Ireland.'
+      answer: 'We are based in the "MAI Muslim Center": Unit 1 & 2, Greenhills Business Centre, Greenhills Road, Tallaght, Dublin 24, Ireland.'
     },
     {
       question: 'What are your office and prayer hours?',

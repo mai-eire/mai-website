@@ -2,13 +2,11 @@ import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 import PatronDashboard from '../components/PatronDashboard';
 import LandingPage from '../components/LandingPage';
 import AboutUs from '../components/AboutUs';
 import Events from '../components/Events';
-import EventManager from '../components/admin/EventManager';
-import Login from '../components/admin/Login';
-import ProtectedRoute from '../components/admin/ProtectedRoute';
 import Navbar from '../components/Navbar';
 import FAQ from '../components/FAQ';
 import Facilities from '../components/Facilities';
@@ -146,30 +144,45 @@ const theme = createTheme({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
+  // The back office is a tool, not a page of the website. It gets its own slim
+  // chrome from AdminShell instead of the public marketing navbar and the big
+  // green footer, which cost a screenful on every admin page and blur the line
+  // between editing the site and browsing it.
+  // /admin/drafts is the exception: it previews a post as its published page,
+  // so it needs the real navbar and footer around it.
+  const isAdmin =
+    router.pathname.startsWith('/admin') && !router.pathname.startsWith('/admin/drafts');
+
   return (
     <ThemeProvider theme={theme}>
       <Head>
+        {/* Site-wide defaults. Every tag a page might need to override carries a
+            `key`: Next only replaces a tag from _app when the page renders one
+            with the SAME key, and without that a shared statement or article
+            would show this generic card instead of its own headline. */}
         <link rel="icon" type="image/png" href="/assets/MAI_Logo_Icon.png" />
-        <title>MAI Muslim Center</title>
-        <meta name="description" content="MAI Muslim Center is dedicated to supporting Muslims in Ireland and promoting Islamic values." />
+        <title key="title">MAI Muslim Center</title>
+        <meta key="description" name="description" content="MAI Muslim Center is dedicated to supporting Muslims in Ireland and promoting Islamic values." />
         <meta name="keywords" content="Tallaght Mosque, Muslim Association of Ireland, MAI, Ireland Mosque, Islamic Centre, Dublin Mosque, Muslim Community Ireland" />
         <meta name="author" content="MAI" />
         {/* Open Graph Meta Tags for Social Sharing */}
-        <meta property="og:title" content="MAI Muslim Center" />
-        <meta property="og:description" content="Serving the Muslim community in Ireland through education, worship, and support." />
-        <meta property="og:image" content="https://new.mai.ie/assets/MAI_Logo.png" />
-        <meta property="og:url" content="https://new.mai.ie/" />
-        <meta property="og:type" content="website" />
+        <meta key="og:title" property="og:title" content="MAI Muslim Center" />
+        <meta key="og:description" property="og:description" content="Serving the Muslim community in Ireland through education, worship, and support." />
+        <meta key="og:image" property="og:image" content="https://new.mai.ie/assets/MAI_Logo.png" />
+        <meta key="og:url" property="og:url" content="https://new.mai.ie/" />
+        <meta key="og:type" property="og:type" content="website" />
         {/* Twitter Card Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="MAI Muslim Center" />
-        <meta name="twitter:description" content="Serving the Muslim community in Ireland through education, worship, and support." />
-        <meta name="twitter:image" content="https://new.mai.ie/assets/MAI_Logo.png" />
+        <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+        <meta key="twitter:title" name="twitter:title" content="MAI Muslim Center" />
+        <meta key="twitter:description" name="twitter:description" content="Serving the Muslim community in Ireland through education, worship, and support." />
+        <meta key="twitter:image" name="twitter:image" content="https://new.mai.ie/assets/MAI_Logo.png" />
       </Head>
       <CssBaseline />
-      <Navbar />
+      {!isAdmin && <Navbar />}
       <Component {...pageProps} />
-      <FooterSection />
+      {!isAdmin && <FooterSection />}
     </ThemeProvider>
   );
 }

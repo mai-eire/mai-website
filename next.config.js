@@ -11,6 +11,16 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  async redirects() {
+    return [
+      // The newsroom used to have three listing pages. There is one now, and
+      // the type is a query parameter - but /statements and /articles are the
+      // addresses people were given, so they keep working.
+      { source: '/statements', destination: '/news?type=STATEMENT', permanent: false },
+      { source: '/articles', destination: '/news?type=ARTICLE', permanent: false },
+    ]
+  },
+
   // Add rewrites for your API routes if needed
   async rewrites() {
     return [

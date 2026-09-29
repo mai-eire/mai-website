@@ -46,3 +46,17 @@ The application will be available at `http://localhost:3000` by default.
 ## Development
 
 The application is built using Create React App and follows modern React development practices. The source code is located in the `src` directory.
+
+## Newsroom (statements & articles)
+
+Publishing, the admin back office, and what has to change before the database
+works in production: **[docs/newsroom.md](docs/newsroom.md)**.
+
+Quick start for local development:
+
+```bash
+npm run db:push                                  # create the local SQLite database
+npm run seed:newsroom                            # optional: four example posts
+npm run create-admin -- you@mai.ie "Your Name"   # an account to sign in with
+npm run dev                                      # then visit /news and /admin/posts
+```

@@ -42,6 +42,7 @@ const navItems = [
   },
   { label: 'Discover Islam', path: '/discover-islam' },
   { label: 'Events', path: '/events' },
+  { label: 'Newsroom', path: '/news' },
   { label: 'Contact Us', path: '/contact' },
 ];
 

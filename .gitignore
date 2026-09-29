@@ -28,3 +28,9 @@ yarn-error.log*
 .vscode/
 *.swp
 *.swo 
+# Local SQLite dev database
+prisma/dev.db
+prisma/dev.db-journal
+
+# TypeScript incremental build cache
+tsconfig.tsbuildinfo
