@@ -186,6 +186,47 @@ written into the schema's header comment rather than left as folklore.
   then the "optional PDF on letterhead" a statement is supposed to carry has no
   way to exist.
 
+## Continuous deployment
+
+Every push to `main` on `github.com/mai-eire/mai-website` builds and deploys,
+through **Cloudflare Workers Builds** - Cloudflare pulls from GitHub itself, so
+there is no API token stored in the repository or in GitHub. The settings live
+in the dashboard, under Workers & Pages -> mai-website -> Settings -> Builds:
+
+| Setting | Value |
+| --- | --- |
+| Branch | `main` |
+| Root directory | `/` |
+| Build command | `npx opennextjs-cloudflare build` |
+| Deploy command | `npx wrangler deploy` |
+
+`npm ci` runs first, and `postinstall` runs `prisma generate` with it, which is
+what recreates `lib/generated` - that directory is gitignored, so a build that
+skipped it would fail on the first import. `.nvmrc` pins Node to the version
+that was tested; without it the builder picks its own and the two drift.
+
+**Migrations are deliberately not part of this.** D1 has no transactions and
+`prisma migrate diff` will write a `DROP TABLE` if the schema implies one, so a
+migration applied unattended can destroy production with nothing to roll back
+to. Apply the schema change first, confirm it, then push:
+
+```bash
+npm run db:migrate:remote   # you, watching it
+git push                    # then CI deploys the code
+```
+
+That ordering also means a deploy never lands on a database it does not match.
+
+### A trap worth remembering
+
+`prisma.config.ts` calls `listLocalDatabases()`, and that throws `ENOENT`
+instead of returning `[]` when `.wrangler/` does not exist - which is true of
+every fresh clone and every CI build. Because it runs from `postinstall`, it
+took down `npm ci` before a build could start, and nothing about the error
+mentioned CI. It is caught now. The general lesson: anything reading
+`.wrangler/` or `lib/generated` is reading something that is not in the
+repository, so test it against a clean clone rather than your working copy.
+
 ## Leaving Netlify
 
 `netlify.toml` is still in the repository and the Netlify site still builds. It

@@ -10,7 +10,17 @@ import path from 'node:path';
 import { defineConfig } from '@prisma/config';
 import { listLocalDatabases } from '@prisma/adapter-d1';
 
-const local = listLocalDatabases();
+// listLocalDatabases() throws ENOENT rather than returning [] when .wrangler/
+// does not exist yet, which is every fresh clone and every CI build. This file
+// is loaded by `prisma generate`, which runs from postinstall, so letting that
+// throw fails `npm ci` before a build can even start.
+const local = (() => {
+  try {
+    return listLocalDatabases();
+  } catch {
+    return [] as string[];
+  }
+})();
 
 export default defineConfig({
   schema: path.join('prisma', 'schema.prisma'),
