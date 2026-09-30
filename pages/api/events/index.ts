@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../lib/prisma';
+import { authorizeWrite } from '../../../lib/auth';
 import type { EventModel } from '../../../lib/generated/prisma/models';
 
 // Function to retry a database operation
@@ -31,6 +32,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (!(await authorizeWrite(req, res))) return;
+
   if (req.method === 'GET') {
     try {
       console.log('Attempting to fetch events...');

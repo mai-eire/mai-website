@@ -126,6 +126,19 @@ type Handler = (
   user: SessionUser
 ) => unknown | Promise<unknown>;
 
+// For a route that the public reads and only an editor writes: /api/events
+// backs both the homepage listing and the admin screen, so it cannot go behind
+// withAuth wholesale. Returns false once it has already answered with 401.
+export const authorizeWrite = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<boolean> => {
+  if (req.method === 'GET' || req.method === 'HEAD') return true;
+  if (await getSessionUser(req)) return true;
+  res.status(401).json({ error: 'Not signed in' });
+  return false;
+};
+
 // Wraps an API route so it only runs for a signed-in user.
 export const withAuth =
   (handler: Handler) => async (req: NextApiRequest, res: NextApiResponse) => {

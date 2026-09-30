@@ -1,10 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../lib/prisma';
+import { authorizeWrite } from '../../../lib/auth';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (!(await authorizeWrite(req, res))) return;
+
   const { id } = req.query;
 
   if (typeof id !== 'string') {
