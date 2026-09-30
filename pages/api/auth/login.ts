@@ -2,6 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../../lib/prisma';
 import { createSession, verifyPassword } from '../../../lib/auth';
 
+// A valid bcrypt hash, cost 12, of a random string that was discarded. See the
+// comment at its use below - the point is that comparing against it costs the
+// same as comparing against a real account's password.
+const DUMMY_HASH = '$2b$12$zdjPGr5n2f/KQSuJESJaQuVlz/X/9AAMf4EgyAS/zjCp6vIXt6yVW';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -21,9 +26,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // One message for both "no such account" and "wrong password", and the
     // hash comparison runs either way, so the response neither says nor times
     // out differently for an email that exists.
+    //
+    // DUMMY_HASH must be a *real* bcrypt hash - 60 characters, of a string
+    // nobody knows. Given anything malformed, bcrypt rejects it outright
+    // instead of hashing, which returns in under a millisecond and hands an
+    // attacker exactly the timing oracle this branch exists to close. The
+    // previous value here was 65 characters and did that.
     const ok = user
       ? await verifyPassword(String(password), user.password)
-      : await verifyPassword(String(password), '$2a$12$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvalidin');
+      : await verifyPassword(String(password), DUMMY_HASH);
 
     if (!user || !ok) {
       return res.status(401).json({ error: 'Incorrect email or password' });
