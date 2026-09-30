@@ -17,9 +17,15 @@ Cloudflare that server is a Worker.
 | Static assets | Served from `.open-next/assets` by the `ASSETS` binding |
 | Secrets | Wrangler secrets in production, `.dev.vars` locally |
 
-**The Workers Paid plan is required.** Not a preference - the Free plan caps CPU
-at 10ms per request, and a single sign-in spends roughly 300ms hashing the
-password. Server-rendering a page exceeds 10ms on its own. Paid allows 30s.
+**The Workers Paid plan is required**, because of sign-in. The Free plan caps
+CPU at 10ms per request and a single sign-in spends roughly 300ms hashing the
+password - and that is not something to optimise away, because the slowness *is*
+the security property of a password hash. Paid allows 30s.
+
+Rendering a page is not the problem: measured warm, `/contact` takes 3-5ms and a
+newsroom page 13-20ms of wall clock *including* the D1 round trip, so the CPU
+alone is well under the cap. Public pages also carry `s-maxage=60`, so the CDN
+absorbs most traffic and a page renders at most once a minute per location.
 
 ## First-time setup
 
@@ -56,15 +62,20 @@ npx wrangler secret put BREVO_LIST_ID
 npx wrangler secret put CONTACT_FROM_EMAIL
 npx wrangler secret put CONTACT_FROM_NAME
 npx wrangler secret put CONTACT_TO_EMAIL
-npx wrangler secret put NEXT_PUBLIC_SITE_URL # the live origin, no trailing slash
 ```
+
+`NEXT_PUBLIC_SITE_URL` is **not** a secret and cannot be one. Next inlines every
+`NEXT_PUBLIC_*` value into the bundle at build time, so a Worker secret of that
+name is simply ignored. It defaults to `https://new.mai.ie` in
+`components/news/postFormatting.js`; to ship a different origin, set it in the
+environment that runs `npm run deploy`.
 
 `AUTH_SECRET` **must differ from the local one** and must be at least 32
 characters; `lib/auth.ts` refuses to sign anyone in rather than fall back to a
-guessable key. `NEXT_PUBLIC_SITE_URL` is what canonical URLs, the RSS feed and
-social cards are built from - if it is wrong, every shared link is wrong.
-Leave `CONTACT_OVERRIDE_EMAIL` unset in production, or every department's mail
-goes to one inbox.
+guessable key. The site URL is what canonical URLs, the RSS feed and social
+cards are built from - if it is wrong, every shared link is wrong. Leave
+`CONTACT_OVERRIDE_EMAIL` unset in production, or every department's mail goes to
+one inbox.
 
 **4. Deploy.**
 
@@ -154,13 +165,6 @@ written into the schema's header comment rather than left as folklore.
 
 ## Still to do
 
-Neither of these blocks the deploy, but both were found during the move and
-neither is fixed:
-
-- **`/api/events` has no authentication.** `POST`, `PUT` and `DELETE` are open
-  to anyone, and the admin UI writes through them. On a public URL that means
-  anyone can create or delete events. The posts API is behind `withAuth`;
-  events never got the same treatment. This is a release blocker.
 - **There is nowhere to upload a file.** `coverImageUrl`, `authorPhotoUrl` and
   `pdfUrl` are text fields an editor pastes a URL into. R2 is the natural fit -
   it binds directly to the Worker - plus an authenticated upload route. Until

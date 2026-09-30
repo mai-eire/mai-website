@@ -26,7 +26,7 @@
     {
       "binding": "DB",
       "database_name": "mai-website",
-      "database_id": "REPLACE_ME",
+      "database_id": "a83d187a-0c6a-449b-a3a7-5d5d5305eaf2",
       "migrations_dir": "migrations"
     }
   ]
