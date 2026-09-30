@@ -17,15 +17,30 @@ Cloudflare that server is a Worker.
 | Static assets | Served from `.open-next/assets` by the `ASSETS` binding |
 | Secrets | Wrangler secrets in production, `.dev.vars` locally |
 
-**The Workers Paid plan is required**, because of sign-in. The Free plan caps
-CPU at 10ms per request and a single sign-in spends roughly 300ms hashing the
-password - and that is not something to optimise away, because the slowness *is*
-the security property of a password hash. Paid allows 30s.
+**The Workers Paid plan is required.** The Free plan caps CPU at 10ms per
+invocation, and this app does not fit in 10ms - not for sign-in and not for
+rendering either. Measured on the deployed Worker with `wrangler tail`, which
+reports CPU separately from wall clock:
 
-Rendering a page is not the problem: measured warm, `/contact` takes 3-5ms and a
-newsroom page 13-20ms of wall clock *including* the D1 round trip, so the CPU
-alone is well under the cap. Public pages also carry `s-maxage=60`, so the CDN
-absorbs most traffic and a page renders at most once a minute per location.
+| Route | CPU | Outcome on Free |
+| --- | --- | --- |
+| `GET /about` | 9ms | scraped through |
+| `GET /contact` | 8-10ms | killed on the slower runs |
+| `GET /api/events` | 11ms | killed |
+| `GET /news/rss.xml` | 10ms | killed |
+| `GET /admin/login` | 10ms | killed |
+| `POST /api/auth/login` | 10ms (of ~330ms needed) | killed every time |
+
+Do not try to measure this with a stopwatch on the outside. Wall clock includes
+the D1 round trip and network, and a request that is killed at the CPU limit can
+still answer 200, so curl timings suggested everything was fine while a third of
+the invocations were being destroyed. `wrangler tail` reports `"outcome":
+"exceededCpu"` and is the only thing worth believing here.
+
+Sign-in is the part that can never be made to fit. bcrypt at cost 12 is ~330ms
+of pure CPU, 33x the cap, and that cost is the security property rather than
+inefficiency - tuning it down to fit would mean a password hash weak enough to
+be worth attacking. Rendering is closer to the line but still over it.
 
 ## First-time setup
 
