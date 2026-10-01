@@ -164,14 +164,14 @@ function MyApp({ Component, pageProps }: AppProps) {
         {/* Open Graph Meta Tags for Social Sharing */}
         <meta key="og:title" property="og:title" content="MAI Muslim Center" />
         <meta key="og:description" property="og:description" content="Serving the Muslim community in Ireland through education, worship, and support." />
-        <meta key="og:image" property="og:image" content="https://new.mai.ie/assets/MAI_Logo.png" />
+        <meta key="og:image" property="og:image" content="https://new.mai.ie/assets/og-hero.jpg" />
         <meta key="og:url" property="og:url" content="https://new.mai.ie/" />
         <meta key="og:type" property="og:type" content="website" />
         {/* Twitter Card Meta Tags */}
         <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
         <meta key="twitter:title" name="twitter:title" content="MAI Muslim Center" />
         <meta key="twitter:description" name="twitter:description" content="Serving the Muslim community in Ireland through education, worship, and support." />
-        <meta key="twitter:image" name="twitter:image" content="https://new.mai.ie/assets/MAI_Logo.png" />
+        <meta key="twitter:image" name="twitter:image" content="https://new.mai.ie/assets/og-hero.jpg" />
       </Head>
       <CssBaseline />
       {!isAdmin && <Navbar />}
