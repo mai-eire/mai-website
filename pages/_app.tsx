@@ -3,13 +3,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import PatronDashboard from '../components/PatronDashboard';
-import LandingPage from '../components/LandingPage';
-import AboutUs from '../components/AboutUs';
-import Events from '../components/Events';
 import Navbar from '../components/Navbar';
-import FAQ from '../components/FAQ';
-import Facilities from '../components/Facilities';
 import FooterSection from '../components/landing/FooterSection';
 import Head from 'next/head';
 

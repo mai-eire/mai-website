@@ -37,8 +37,7 @@ export default async function handler(
   if (req.method === 'GET') {
     try {
       console.log('Attempting to fetch events...');
-      console.log('Database URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
-      
+
       // Add a timeout to the database connection
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error('Database connection timeout')), 15000);
