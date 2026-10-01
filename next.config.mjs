@@ -62,9 +62,10 @@ const nextConfig = {
     if (!isServer) return config;
 
     // Development runs in Node, so swap in the Node build of the Prisma client
-    // (see the second generator in schema.prisma). Everything below this point
-    // is about the workerd build and does not apply.
-    if (dev) {
+    // (see the second generator in schema.prisma). So does Netlify, which runs
+    // the app as Node functions and sets NETLIFY=true in every build. Everything
+    // below this point is about the workerd build and does not apply.
+    if (dev || process.env.NETLIFY === 'true') {
       config.plugins.push(
         new webpack.NormalModuleReplacementPlugin(/generated\/prisma\/client/, (resource) => {
           resource.request = resource.request.replace(

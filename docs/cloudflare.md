@@ -227,9 +227,46 @@ mentioned CI. It is caught now. The general lesson: anything reading
 `.wrangler/` or `lib/generated` is reading something that is not in the
 repository, so test it against a clean clone rather than your working copy.
 
-## Leaving Netlify
+## The Netlify deploy
 
-`netlify.toml` is still in the repository and the Netlify site still builds. It
-is kept deliberately until a Cloudflare deploy has been confirmed against the
-real domain. Once DNS points at the Worker, delete `netlify.toml`, remove
-`@netlify/plugin-nextjs` from the Netlify UI, and drop the build hook.
+`netlify.toml` is still in the repository and the Netlify site still builds and
+serves the same app, against the **same production D1 database**. Netlify has
+no D1 binding, so `lib/prisma.ts` reaches the database over D1's HTTP API with
+an API token instead. Two things make that work:
+
+- `next.config.mjs` builds with the Node Prisma client when `NETLIFY=true`
+  (Netlify sets it in every build), exactly as it does for `next dev`. The
+  workerd client's `.wasm?module` import only means anything to the Cloudflare
+  bundler.
+- `lib/prisma.ts` uses the binding when there is one and falls back to the
+  token otherwise. Development never falls back, so a token in `.env.local`
+  cannot point `next dev` at production.
+
+Set these in Netlify, under Site configuration -> Environment variables, scoped
+to Functions (and Builds, harmlessly):
+
+| Variable | Value |
+| --- | --- |
+| `CLOUDFLARE_D1_TOKEN` | An API token with **Account -> D1 -> Edit**, for this account only |
+| `CLOUDFLARE_ACCOUNT_ID` | From `npx wrangler whoami` or the dashboard sidebar |
+| `CLOUDFLARE_DATABASE_ID` | `database_id` in `wrangler.jsonc` |
+
+Create the token in the dashboard under My Profile -> API Tokens -> Create
+Token -> Custom token. Give it D1 Edit and nothing else: it is a
+production-write credential living outside Cloudflare, so keep its reach small.
+The other secrets (`AUTH_SECRET`, `BREVO_*`, `CONTACT_*`) need setting in
+Netlify too; Wrangler secrets do not reach it.
+
+What to expect from this path:
+
+- **Every query is an HTTPS round trip to the Cloudflare API**, not a
+  call within the same network, so database pages are noticeably slower than on
+  the Worker.
+- **It shares the Cloudflare API rate limit** (1,200 requests per five minutes
+  per user, across every token that user owns). That is fine for a staging copy
+  but not for real traffic, which is one more reason the Worker should serve
+  the public domain.
+
+Once DNS points at the Worker and Netlify is no longer needed, delete
+`netlify.toml`, remove `@netlify/plugin-nextjs` from the Netlify UI, drop the
+build hook, and revoke the D1 token.
