@@ -42,6 +42,10 @@ export const getServerSideProps: GetServerSideProps = async ({ query, res }) => 
   // off the database, while stale-while-revalidate means nobody waits for the
   // refresh.
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+  // Netlify's CDN leaves the query string out of its cache key unless told
+  // otherwise, so without this every tab got whichever /news was cached first.
+  // Only the parameters read above, so utm_* and the like do not split the cache.
+  res.setHeader('Netlify-Vary', 'query=type|topic');
 
   return { props: { initial, activeType, activeTopic, topicOptions } };
 };

@@ -20,6 +20,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    // Netlify's CDN ignores the query string in its cache key by default, which
+    // made every page of "Load more" and every filter return the same response.
+    res.setHeader('Netlify-Vary', 'query=type|topic|page');
     return res.status(200).json(result);
   } catch (error: any) {
     console.error('Error listing posts:', error);
