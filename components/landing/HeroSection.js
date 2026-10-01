@@ -66,7 +66,7 @@ const HeroSection = () => {
         }}
       >
         <Image
-          src="/assets/eid-prayer-light.png"
+          src="/assets/eid-prayer.webp"
           alt="Rows of worshippers standing for Eid prayer on colourful prayer mats across a sports hall floor"
           fill
           sizes="100vw"
