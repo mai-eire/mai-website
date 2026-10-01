@@ -77,7 +77,7 @@ const AboutUs = () => {
             sx={{ fontSize: '1.125rem', lineHeight: 1.8, color: 'text.secondary' }}
           >
             MAI is a religious, educational, social and non-profit organisation
-            formed in 2000 as the number of Muslims in Ireland grew. We provide
+            formed in the year 2000 as the number of Muslims in Ireland grew. We provide
             religious, educational and social services and programs designed to
             support the comprehensive educational and spiritual development of the
             Muslim individual, family and community.
@@ -226,17 +226,16 @@ const AboutUs = () => {
                 mb: 3,
               }}
             >
-              The last decade witnessed a significant increase in the Muslim
-              population in Ireland. This growth called for more establishments to
-              help existing Islamic organizations meet the new needs of the
-              community.
+              Because Islam is a complete way of life, offering guidance for the individual, the community, and society.
+              Muslims in Ireland need more than isolated activities or support; they need a unifying <i>movement</i> that
+              cultivates spiritually grounded, intellectually sharp, morally strong, and socially active individuals.
             </Typography>
             <Typography
               sx={{ fontSize: '1.125rem', lineHeight: 1.8, color: 'text.secondary' }}
             >
-              MAI is an educational and social organisation established in February
-              2000 to help Muslims in Ireland build a better future, and to
-              introduce Islam and its cultural values to the Irish public.
+              MAI exists to make this vision real. We're bringing Muslims in Ireland together, and developing Muslims who are 
+              confident in their faith, aware of their identity, and conscious of their global responsibility. MAI is building a 
+              generation capable of transforming themselves, their communities, and society at large; in Ireland and beyond.
             </Typography>
           </Paper>
         </Box>

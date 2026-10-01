@@ -13,7 +13,7 @@ const FAQ = () => {
   const faqItems = [
     {
       question: 'What is MAI?',
-      answer: 'MAI is an Islamic association based in Ireland. It is dedicated to supporting Muslims in Ireland and promoting the noble values of Islam. The association also contributes to the development of Irish society and is registered as a non-for-profit company.'
+      answer: 'MAI is an Islamic organization dedicated to caring for Muslims in Ireland and promoting the noble values of Islam, as well as contributing to the cultural growth of Irish society.'
     },
     {
       question: 'Where are you located?',
@@ -21,7 +21,7 @@ const FAQ = () => {
     },
     {
       question: 'What are your office and prayer hours?',
-      answer: 'Office Hours: 10:00 AM – 2:00 PM daily. The mosque is open for all prayers.'
+      answer: 'Office Hours: 11:00 AM – 4:00 PM daily. The mosque is open for all prayers.'
     },
     {
       question: 'What are your core values and goals?',
@@ -33,11 +33,11 @@ const FAQ = () => {
     },
     {
       question: 'How can I contact you?',
-      answer: 'You can reach us at info@mai.ie for general inquiries, feedback, or complaints.'
+      answer: 'You can reach us at info@mai.ie or on the "Contact Us" page on this site for all inquiries, feedback, or complaints.'
     },
     {
       question: 'How can I stay updated or get involved?',
-      answer: 'To receive updates about our news, events, or to volunteer with us, email info@mai.ie and ask to join our mailing list.'
+      answer: 'To receive updates about our news, events, or to volunteer with us, email info@mai.ie or join our mailing list.'
     }
   ];
 
