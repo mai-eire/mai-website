@@ -241,6 +241,28 @@ const Navbar = () => {
             ? '1px solid transparent'
             : '1px solid rgba(0, 0, 0, 0.12)',
           transition: 'background-color 300ms ease, border-color 300ms ease',
+          // Over the hero: frosted glass tinted with the hero's warm brown that
+          // fades out downwards, so the white links hold up against the busy
+          // photograph without a hard edge. It runs a little past the bar so
+          // the fade has room. A backdrop blur can't fade by itself, hence the
+          // mask on a separate layer.
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: -24,
+            zIndex: -1,
+            pointerEvents: 'none',
+            background: 'linear-gradient(to bottom, rgba(20, 13, 6, 0.6) 0%, rgba(20, 13, 6, 0.3) 60%, rgba(20, 13, 6, 0) 100%)',
+            backdropFilter: 'blur(14px) saturate(140%)',
+            WebkitBackdropFilter: 'blur(14px) saturate(140%)',
+            maskImage: 'linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%)',
+            opacity: overHero ? 1 : 0,
+            transition: 'opacity 300ms ease',
+          },
         }}
       >
         <Container maxWidth="xl">

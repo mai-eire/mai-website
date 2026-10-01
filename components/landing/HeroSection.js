@@ -66,12 +66,12 @@ const HeroSection = () => {
         }}
       >
         <Image
-          src="/assets/tallaght_mosque.jpg"
-          alt="The prayer hall at the MAI Muslim Center, its carved walnut mihrab wall lit from above"
+          src="/assets/eid-prayer-light.png"
+          alt="Rows of worshippers standing for Eid prayer on colourful prayer mats across a sports hall floor"
           fill
           sizes="100vw"
           quality={85}
-          style={{ objectFit: 'cover', objectPosition: 'center 55%' }}
+          style={{ objectFit: 'cover', objectPosition: 'center 50%' }}
           priority
         />
       </Box>
@@ -83,11 +83,19 @@ const HeroSection = () => {
         sx={{
           position: 'absolute',
           inset: 0,
-          background: [
-            `linear-gradient(to right, rgba(${INK}, 0.86) 0%, rgba(${INK}, 0.62) 38%, rgba(${INK}, 0.18) 72%, rgba(${INK}, 0) 100%)`,
-            `linear-gradient(to top, rgba(${INK}, 0.72) 0%, rgba(${INK}, 0) 32%)`,
-            `linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 18%)`,
-          ].join(', '),
+          // On narrow screens the type spans the full width, so the main scrim
+          // runs diagonally from the bottom-left and stays dark for longer
+          background: {
+            xs: [
+              `linear-gradient(to top right, rgba(${INK}, 0.95) 0%, rgba(${INK}, 0.88) 45%, rgba(${INK}, 0.6) 70%, rgba(${INK}, 0) 100%)`,
+              `linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 18%)`,
+            ].join(', '),
+            md: [
+              `linear-gradient(to right, rgba(${INK}, 0.95) 0%, rgba(${INK}, 0.85) 30%, rgba(${INK}, 0.5) 55%, rgba(${INK}, 0) 85%)`,
+              `linear-gradient(to top, rgba(${INK}, 0.72) 0%, rgba(${INK}, 0) 32%)`,
+              `linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 18%)`,
+            ].join(', '),
+          },
         }}
       />
 
